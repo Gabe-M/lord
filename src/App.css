@@ -1,0 +1,17 @@
+:root {
+  background: transparent;
+}
+
+html,
+body,
+#root,
+.app {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  background: transparent;
+}
+
+body {
+  min-height: 100vh;
+}

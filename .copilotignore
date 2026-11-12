@@ -1,0 +1,15 @@
+# Evita indexação de binários e dependências pesadas
+node_modules/
+src-tauri/target/
+dist/
+
+# Evita vazamento de credenciais e indexação de cache do Python
+.env
+.venv/
+env/
+__pycache__/
+*.pyc
+
+# Arquivos de banco de dados locais
+*.db
+*.sqlite3
