@@ -12,18 +12,32 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "Lord",
-        "width": 360,
-        "height": 360,
-        "minWidth": 216,
-        "minHeight": 216,
-        "maxWidth": 576,
-        "maxHeight": 576,
+        "width": 280,
+        "height": 280,
+        "minWidth": 154,
+        "minHeight": 154,
+        "maxWidth": 616,
+        "maxHeight": 616,
         "resizable": false,
         "decorations": false,
         "shadow": false,
         "transparent": true,
         "alwaysOnTop": true
+      },
+      {
+        "label": "chat",
+        "title": "Lord - Terminal",
+        "width": 420,
+        "height": 540,
+        "minWidth": 320,
+        "minHeight": 300,
+        "visible": false,
+        "resizable": true,
+        "decorations": false,
+        "transparent": true,
+        "alwaysOnTop": false
       }
     ],
     "security": {

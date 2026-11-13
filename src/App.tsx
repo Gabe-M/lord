@@ -1,21 +1,51 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { MOUSE } from "three";
 import { LogicalSize } from "@tauri-apps/api/dpi";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { MOUSE } from "three";
 import Avatar from "./components/Avatar";
+import ChatContainer from "./components/ChatContainer";
+import type { ChatMessage } from "./components/ChatContainer";
 import "./App.css";
 
-const BASE_WIDTH = 360;
-const BASE_HEIGHT = 360;
-const MIN_SCALE = 0.6; // 216x216 (minWidth / minHeight do tauri.conf.json)
-const MAX_SCALE = 1.6; // 576x576 (maxWidth / maxHeight do tauri.conf.json)
+const BASE_WIDTH = 280;
+const BASE_HEIGHT = 280;
+const MIN_SCALE = 0.55;
+const MAX_SCALE = 2.2;
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
-function App() {
+function ChatWindowView() {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+  const handleSendMessage = (content: string) => {
+    const newUserMsg: ChatMessage = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content,
+    };
+    setMessages((prev) => [...prev, newUserMsg]);
+
+    setTimeout(() => {
+      const newLordMsg: ChatMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: "COMANDO RECEBIDO. PROCESSANDO DIRETRIZES...\n[SISTEMA OK]",
+      };
+      setMessages((prev) => [...prev, newLordMsg]);
+    }, 600);
+  };
+
+  return (
+    <main className="app crt-overlay">
+      <ChatContainer messages={messages} onSend={handleSendMessage} />
+    </main>
+  );
+}
+
+function AvatarWindowView() {
   const [currentIndex, setCurrentIndex] = useState(11);
   const appRef = useRef<HTMLElement | null>(null);
   const scaleRef = useRef(1.0);
@@ -47,7 +77,6 @@ function App() {
     if (!node) return;
 
     const handleWheel = (event: WheelEvent) => {
-      // deltaY < 0 (scroll para cima) aumenta a janela; deltaY > 0 diminui
       const step = event.deltaY < 0 ? 0.06 : -0.06;
       window.requestAnimationFrame(() => {
         applyWindowScale(scaleRef.current + step);
@@ -88,6 +117,22 @@ function App() {
       </Canvas>
     </main>
   );
+}
+
+function App() {
+  const [windowLabel] = useState(() => {
+    try {
+      return getCurrentWindow().label;
+    } catch {
+      return "main";
+    }
+  });
+
+  if (windowLabel === "chat") {
+    return <ChatWindowView />;
+  }
+
+  return <AvatarWindowView />;
 }
 
 export default App;

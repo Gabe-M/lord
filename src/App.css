@@ -1,6 +1,18 @@
+/* src/App.css */
 :root {
-  background: transparent;
-  color-scheme: dark;
+  /* Paleta de Cores */
+  --bg-dark: rgba(10, 15, 26, 0.85); /* Azul-Meia-Noite translúcido */
+  --accent: #FF5722; /* Laranja-Tangerina */
+  --text-main: #FFFFFF;
+  
+  /* Tipografia */
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+}
+
+/* Reset básico para garantir que nada herde estilos padrão da web */
+* {
+  box-sizing: border-box;
 }
 
 html,
@@ -21,4 +33,40 @@ body {
 .app {
   position: fixed;
   inset: 0;
+}
+
+canvas {
+  display: block;
+}
+
+/* Utilitário: Cursor Terminal Piscante */
+@keyframes blink-step {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.terminal-cursor {
+  display: inline-block;
+  width: 10px;
+  height: 1.2em;
+  background-color: var(--accent);
+  animation: blink-step 1s steps(1, start) infinite;
+  vertical-align: text-bottom;
+  margin-left: 4px;
+}
+
+/* Utilitário: Efeito CRT/Scanlines global (adicione a classe 'crt-overlay' no <main>) */
+.crt-overlay::after {
+  content: "";
+  position: absolute;
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%;
+  /* Padrão de grade militar sutil */
+  background-image: radial-gradient(var(--text-main) 1px, transparent 0);
+  background-size: 20px 20px;
+  opacity: 0.03;
+  pointer-events: none; /* Para não bloquear os cliques no modelo 3D ou chat */
+  z-index: 9999;
 }
