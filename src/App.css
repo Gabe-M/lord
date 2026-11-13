@@ -1,5 +1,6 @@
 :root {
   background: transparent;
+  color-scheme: dark;
 }
 
 html,
@@ -7,11 +8,17 @@ body,
 #root,
 .app {
   width: 100%;
-  min-height: 100%;
+  height: 100%;
   margin: 0;
   background: transparent;
+  overflow: hidden;
 }
 
 body {
   min-height: 100vh;
+}
+
+.app {
+  position: fixed;
+  inset: 0;
 }

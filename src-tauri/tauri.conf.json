@@ -15,6 +15,11 @@
         "title": "Lord",
         "width": 800,
         "height": 600,
+        "minWidth": 480,
+        "minHeight": 360,
+        "maxWidth": 1280,
+        "maxHeight": 980,
+        "resizable": true,
         "decorations": false,
         "transparent": true,
         "alwaysOnTop": true
