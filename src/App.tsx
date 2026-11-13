@@ -7,10 +7,10 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import Avatar from "./components/Avatar";
 import "./App.css";
 
-const BASE_WIDTH = 800;
-const BASE_HEIGHT = 600;
-const MIN_SCALE = 0.6; // 480x360 (minWidth / minHeight do tauri.conf.json)
-const MAX_SCALE = 1.6; // 1280x960 (dentro de maxWidth / maxHeight)
+const BASE_WIDTH = 360;
+const BASE_HEIGHT = 360;
+const MIN_SCALE = 0.6; // 216x216 (minWidth / minHeight do tauri.conf.json)
+const MAX_SCALE = 1.6; // 576x576 (maxWidth / maxHeight do tauri.conf.json)
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
