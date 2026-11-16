@@ -42,3 +42,4 @@ Sempre que você adicionar, modificar ou sugerir qualquer chamada a APIs do `@ta
 - Ao adicionar dependências React, forneça o comando `npm install <pacote>`.
 - Ao adicionar crates Rust, forneça o comando `cargo add <crate>` e as alterações necessárias no `Cargo.toml`.
 - Ao debugar falhas, solicite logs específicos do console do Vite, do terminal do Tauri (`RUST_BACKTRACE=1 npm run tauri dev`) ou do console de rede (Backend).
+

@@ -1,10 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useGLTF } from "@react-three/drei";
-import type { Group } from "three";
+import {
+  Quaternion,
+  Vector2,
+  Vector3,
+  type Group,
+} from "three";
+import { useFrame, useThree } from "@react-three/fiber";
 
 interface AvatarProps {
   currentIndex?: number;
   onExpressionChange?: (index: number) => void;
+  followMouse?: boolean;
+  mouseLookTarget?: { current: { x: number; y: number } };
 }
 
 const EXPRESSION_NODES = [
@@ -43,11 +51,43 @@ const KEY_TO_INDEX: Record<string, number> = {
 };
 
 const NORMALIZE_SCALE = 0.8;
+const MAX_LOOK_ANGLE = (35 * Math.PI) / 180;
+const FRONT_LOOK_RADIUS = 0.12;
+const FRONT_PITCH = (10 * Math.PI) / 180;
 
-export function Avatar({ currentIndex: controlledIndex, onExpressionChange }: AvatarProps) {
+export function Avatar({
+  currentIndex: controlledIndex,
+  onExpressionChange,
+  followMouse = false,
+  mouseLookTarget,
+}: AvatarProps) {
   const { scene } = useGLTF("/models/source/avatar.glb");
   const [internalIndex, setInternalIndex] = useState(INITIAL_INDEX);
   const groupRef = useRef<Group>(null);
+  const wasFollowingMouseRef = useRef(false);
+  const camera = useThree((state) => state.camera);
+  const raycaster = useThree((state) => state.raycaster);
+  const lookScratch = useMemo(
+    () => ({
+      ndc: new Vector2(),
+      cameraDirection: new Vector3(),
+      cameraQuaternion: new Quaternion(),
+      cameraRight: new Vector3(),
+      cameraUp: new Vector3(),
+      neutralDirection: new Vector3(),
+      targetDirection: new Vector3(),
+      targetRotation: new Quaternion(),
+      limitingRotation: new Quaternion(),
+      identity: new Quaternion(),
+      defaultRotation: new Quaternion().setFromAxisAngle(
+        new Vector3(0, 1, 0),
+        Math.PI,
+      ).multiply(
+        new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), FRONT_PITCH),
+      ),
+    }),
+    [],
+  );
 
   const activeIndex = controlledIndex ?? internalIndex;
 
@@ -88,6 +128,94 @@ export function Avatar({ currentIndex: controlledIndex, onExpressionChange }: Av
       }
     });
   }, [clonedScene, activeIndex]);
+
+  useFrame((_, delta) => {
+    const group = groupRef.current;
+    if (!group) return;
+
+    if (!followMouse || !mouseLookTarget) {
+      wasFollowingMouseRef.current = false;
+      group.quaternion.slerp(
+        lookScratch.defaultRotation,
+        1 - Math.exp(-12 * delta),
+      );
+      return;
+    }
+
+    if (!wasFollowingMouseRef.current) {
+      group.quaternion.copy(lookScratch.defaultRotation);
+      wasFollowingMouseRef.current = true;
+      return;
+    }
+
+    if (
+      Math.hypot(mouseLookTarget.current.x, mouseLookTarget.current.y) <
+      FRONT_LOOK_RADIUS
+    ) {
+      group.quaternion.slerp(
+        lookScratch.defaultRotation,
+        1 - Math.exp(-12 * delta),
+      );
+      return;
+    }
+
+    raycaster.setFromCamera(
+      lookScratch.ndc.set(mouseLookTarget.current.x, -mouseLookTarget.current.y),
+      camera,
+    );
+    camera.getWorldDirection(lookScratch.cameraDirection);
+    camera.getWorldQuaternion(lookScratch.cameraQuaternion);
+    lookScratch.cameraRight
+      .set(1, 0, 0)
+      .applyQuaternion(lookScratch.cameraQuaternion);
+    lookScratch.cameraUp
+      .set(0, 1, 0)
+      .applyQuaternion(lookScratch.cameraQuaternion);
+    lookScratch.neutralDirection
+      .copy(lookScratch.cameraDirection)
+      .negate();
+
+    lookScratch.targetDirection
+      .copy(lookScratch.neutralDirection)
+      .multiplyScalar(raycaster.ray.direction.dot(lookScratch.cameraDirection))
+      .addScaledVector(
+        lookScratch.cameraRight,
+        raycaster.ray.direction.dot(lookScratch.cameraRight),
+      )
+      .addScaledVector(
+        lookScratch.cameraUp,
+        raycaster.ray.direction.dot(lookScratch.cameraUp),
+      )
+      .normalize();
+
+    const lookAngle = lookScratch.neutralDirection.angleTo(
+      lookScratch.targetDirection,
+    );
+    if (lookAngle > MAX_LOOK_ANGLE) {
+      lookScratch.limitingRotation.setFromUnitVectors(
+        lookScratch.neutralDirection,
+        lookScratch.targetDirection,
+      );
+      lookScratch.limitingRotation.slerp(
+        lookScratch.identity,
+        1 - MAX_LOOK_ANGLE / lookAngle,
+      );
+      lookScratch.targetDirection
+        .copy(lookScratch.neutralDirection)
+        .applyQuaternion(lookScratch.limitingRotation)
+        .normalize();
+    }
+
+    lookScratch.targetRotation.setFromUnitVectors(
+      lookScratch.neutralDirection,
+      lookScratch.targetDirection,
+    );
+    lookScratch.targetRotation.premultiply(lookScratch.defaultRotation);
+    group.quaternion.slerp(
+      lookScratch.targetRotation,
+      1 - Math.exp(-16 * delta),
+    );
+  });
 
   return (
     <group ref={groupRef} scale={NORMALIZE_SCALE}>

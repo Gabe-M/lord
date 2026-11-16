@@ -1,0 +1,60 @@
+.quick-input {
+  position: fixed;
+  inset: 0;
+  padding: 10px;
+  background: transparent;
+  color: var(--text-main);
+  font-family: var(--font-mono);
+}
+
+.quick-input__form {
+  display: flex;
+  gap: 8px;
+  height: 100%;
+  padding: 8px 34px 8px 12px;
+  background: var(--bg-dark);
+  border: 2px solid var(--accent);
+  box-shadow: 4px 4px 0 var(--accent);
+}
+
+.quick-input__field {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  border-bottom: 2px solid var(--accent);
+  outline: 0;
+  background: transparent;
+  color: var(--text-main);
+  caret-color: var(--accent);
+  font: inherit;
+}
+
+.quick-input__field::placeholder {
+  color: var(--text-main);
+  opacity: 0.6;
+}
+
+.quick-input__submit,
+.quick-input__close {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.quick-input__submit {
+  font-size: 1.4rem;
+}
+
+.quick-input__close {
+  position: absolute;
+  top: 4px;
+  right: 12px;
+}
+
+.quick-input__submit:hover,
+.quick-input__close:hover {
+  color: var(--text-main);
+}

@@ -1,0 +1,67 @@
+.speech-bubble {
+  position: fixed;
+  inset: 12px;
+  padding: 28px 16px 14px;
+  background: var(--bg-dark);
+  border: 2px solid var(--accent);
+  box-shadow: 5px 5px 0 var(--accent);
+  color: var(--text-main);
+  font-family: var(--font-mono);
+}
+
+.speech-bubble__tag {
+  position: absolute;
+  top: -12px;
+  left: 14px;
+  padding: 2px 10px;
+  background: var(--accent);
+  color: var(--bg-dark);
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+}
+
+.speech-bubble__close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.speech-bubble p {
+  margin: 0;
+  padding-bottom: 24px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.speech-bubble__actions {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.speech-bubble__actions button {
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+}
+
+.speech-bubble__actions button:hover {
+  background: var(--accent);
+  color: var(--bg-dark);
+}
+
+.speech-bubble__close:hover {
+  color: var(--text-main);
+}
